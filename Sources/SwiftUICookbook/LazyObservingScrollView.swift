@@ -46,7 +46,7 @@ public struct LazyObservingScrollView<Content: View>: View {
     public var body: some View {
         ScrollView(axis.set, showsIndicators: showsIndicators) {
             ListViewStack(axis) {
-                ListViewStack(axis, isLazy: true) {
+                ListViewStack(axis, isLazy: true, spacing: spacing) {
                     content
                 }
                 .background(GeometryReader { geometry in
@@ -97,7 +97,7 @@ public struct LazyObservingScrollView<Content: View>: View {
     }
 }
 
-fileprivate extension Axis {
+extension Axis {
     var set: Set {
         self == .horizontal ? .horizontal : .vertical
     }
