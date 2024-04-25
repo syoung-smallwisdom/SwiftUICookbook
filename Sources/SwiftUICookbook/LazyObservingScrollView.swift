@@ -8,7 +8,7 @@ public struct LazyObservingScrollView<Content: View>: View {
     @Environment(\.layoutDirection) private var layoutDirection
     
     let axis: Axis
-    let spacing: CGFloat
+    let spacing: CGFloat?
     let showsIndicators: Bool
     let content: Content
     
@@ -25,7 +25,7 @@ public struct LazyObservingScrollView<Content: View>: View {
     ///   - spacing: The item spacing. (Default = 0)
     ///   - showsIndicators: Whether or not to show the scroll indicators. (Default = true)
     ///   - content: The content to display in the scrollview.
-    public init(_ axis: Axis, offset: Binding<CGFloat>, spacing: CGFloat = 0, showsIndicators: Bool = true, @ViewBuilder content: () -> Content) {
+    public init(_ axis: Axis, offset: Binding<CGFloat>, spacing: CGFloat? = nil, showsIndicators: Bool = true, @ViewBuilder content: () -> Content) {
         self.axis = axis
         self._offset = offset
         self.spacing = spacing
@@ -101,6 +101,10 @@ extension Axis {
     var set: Set {
         self == .horizontal ? .horizontal : .vertical
     }
+    
+    var opposite: Axis {
+        self == .horizontal ? .vertical : .horizontal
+    }
 }
 
 /// The preview is used to allow testing the scrollview with some default values
@@ -109,11 +113,11 @@ struct PreviewLazyObservingScrollView : View {
     
     @State var offsetA: CGFloat = .zero
     @State var offsetB: CGFloat = .zero
-    @State var listA: [Int] = Array(1...20)
+    @State var listA: [Int] = Array(1...200)
     @State var listB: [Int] = Array(1...7)
     
     var body: some View {
-        ListViewStack(axis == .horizontal ? .vertical : .horizontal) {
+        ListViewStack(axis.opposite) {
 
                 Text("\(offsetA)")
                 LazyObservingScrollView(axis, offset: $offsetA) {

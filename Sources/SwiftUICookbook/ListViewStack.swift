@@ -9,7 +9,7 @@ public struct ListViewStack<Content> : View where Content : View {
     
     let axis: Axis
     let isLazy: Bool
-    let spacing: CGFloat
+    let spacing: CGFloat?
     let content: Content
     
     /// - Parameters:
@@ -17,7 +17,7 @@ public struct ListViewStack<Content> : View where Content : View {
     ///   - isLazy: Whether or not the vended container is lazy load.
     ///   - spacing: The spacing between elements in the container.
     ///   - content: The content view builder.
-    public init(_ axis: Axis, isLazy: Bool = false, spacing: CGFloat = 0, @ViewBuilder content: () -> Content) {
+    public init(_ axis: Axis, isLazy: Bool = false, spacing: CGFloat? = nil, @ViewBuilder content: () -> Content) {
         self.axis = axis
         self.isLazy = isLazy
         self.spacing = spacing
