@@ -32,16 +32,6 @@ public struct LazyObservingScrollView<Content: View>: View {
         self.showsIndicators = showsIndicators
         self.content = content()
     }
-    
-    // Is the layout right-to-left?
-    var isLayoutRTL: Bool {
-        layoutDirection == LayoutDirection.rightToLeft
-    }
-    
-    // Is this a horizontal scrollview?
-    var isHorizontal: Bool {
-        axis == .horizontal
-    }
 
     public var body: some View {
         ScrollView(axis.set, showsIndicators: showsIndicators) {
@@ -58,7 +48,7 @@ public struct LazyObservingScrollView<Content: View>: View {
                     let length = (axis == .vertical) ? frame.height : frame.width
                     // a spacer is used at the end to push the content to the top|right|left
                     let newSpacerLength = max(0, overallLength - length)
-                    if isHorizontal && isLayoutRTL {
+                    if axis.isHorizontal && layoutDirection.isLayoutRTL {
                         // If this is a horizontal scroller with right-to-left layout
                         // then scrolling is reversed and the "zero" position is the right
                         // side of the frame.
@@ -74,7 +64,7 @@ public struct LazyObservingScrollView<Content: View>: View {
                     } else {
                         // If this is not right-to-left layout then the offset is
                         // in the minus direction.
-                        self.offset = -1 * (isHorizontal ? frame.minX : frame.minY)
+                        self.offset = -1 * (axis.isHorizontal ? frame.minX : frame.minY)
                     }
                     self.spacerLength = newSpacerLength
                 }
@@ -84,8 +74,8 @@ public struct LazyObservingScrollView<Content: View>: View {
                 Spacer(minLength: spacerLength)
             }
         }
+        .defaultScrollAnchor(axis.isHorizontal ? ( layoutDirection.isLayoutRTL ? .trailing : .leading) : .top)
         .coordinateSpace(name: coordinateSpaceName)
-        .defaultScrollAnchor(isHorizontal ? ( isLayoutRTL ? .trailing : .leading) : .top)
         .lengthReader($overallLength, isHeight: axis == .vertical)
     }
     
@@ -97,13 +87,29 @@ public struct LazyObservingScrollView<Content: View>: View {
     }
 }
 
-extension Axis {
+public extension Axis {
+    
+    /// The corresponding `Axis.Set` for this axis.
     var set: Set {
         self == .horizontal ? .horizontal : .vertical
     }
     
+    /// What is the opposite axis?
     var opposite: Axis {
         self == .horizontal ? .vertical : .horizontal
+    }
+    
+    /// Is this a horizontal scrollview?
+    var isHorizontal: Bool {
+        self == .horizontal
+    }
+}
+
+public extension LayoutDirection {
+    
+    /// Is the layout right-to-left?
+    var isLayoutRTL: Bool {
+        self == .rightToLeft
     }
 }
 
